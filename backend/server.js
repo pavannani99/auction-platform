@@ -52,7 +52,7 @@ function initializeAuctionItems() {
       id: 3,
       title: "Rare Pokémon Card Set",
       description: "1st Edition Base Set - Complete Collection",
-      imageUrl: "https://images.unsplash.com/photo-1613951085587-cfe5d0e30f60?w=400&h=400&fit=crop&auto=format",
+      imageUrl: "https://images.unsplash.com/photo-1542779283-429940ce8336?w=400&h=400&fit=crop&auto=format",
       startingPrice: 10000,
       currentBid: 10000,
       highestBidder: null,
@@ -310,7 +310,7 @@ io.on('connection', (socket) => {
   });
 });
 
-
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 

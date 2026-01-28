@@ -232,6 +232,13 @@ body {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-darker));
+}
+
+.card-image[src=""],
+.card-image:not([src]),
+.card-image[src*="error"] {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240"><rect fill="%230a0e1a" width="400" height="240"/><text x="50%" y="50%" fill="%238892b0" font-family="monospace" font-size="20" text-anchor="middle" dominant-baseline="middle">Image Loading...</text></svg>');
 }
 
 .auction-card:hover .card-image {

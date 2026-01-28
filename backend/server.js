@@ -15,75 +15,114 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
-// In-memory data store (use Redis/DB in production)
-const auctionItems = [
-  {
-    id: 1,
-    title: "Vintage Rolex Submariner",
-    description: "1960s classic dive watch in pristine condition",
-    imageUrl: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400",
-    startingPrice: 5000,
-    currentBid: 5000,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 180000, // 3 minutes from now
-    bids: []
-  },
-  {
-    id: 2,
-    title: "MacBook Pro M3 Max",
-    description: "16-inch, 64GB RAM, 2TB SSD - Brand New",
-    imageUrl: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400",
-    startingPrice: 2500,
-    currentBid: 2500,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 240000, // 4 minutes
-    bids: []
-  },
-  {
-    id: 3,
-    title: "Rare Pokémon Card Set",
-    description: "1st Edition Base Set - Complete Collection",
-    imageUrl: "https://images.unsplash.com/photo-1606503153255-59d440e8dbc8?w=400",
-    startingPrice: 10000,
-    currentBid: 10000,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 300000, // 5 minutes
-    bids: []
-  },
-  {
-    id: 4,
-    title: "Gibson Les Paul 1959",
-    description: "Holy Grail of electric guitars",
-    imageUrl: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400",
-    startingPrice: 150000,
-    currentBid: 150000,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 360000, // 6 minutes
-    bids: []
-  },
-  {
-    id: 5,
-    title: "iPhone 15 Pro Max 1TB",
-    description: "Sealed box, Titanium Blue",
-    imageUrl: "https://images.unsplash.com/photo-1592286927505-2fd1eb8b76c5?w=400",
-    startingPrice: 800,
-    currentBid: 800,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 150000, // 2.5 minutes
-    bids: []
-  },
-  {
-    id: 6,
-    title: "Tesla Model S Plaid",
-    description: "2023, 5000 miles, Full Self-Driving",
-    imageUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400",
-    startingPrice: 75000,
-    currentBid: 75000,
-    highestBidder: null,
-    auctionEndTime: Date.now() + 420000, // 7 minutes
-    bids: []
+// Auction duration in milliseconds (10 minutes per auction)
+const AUCTION_DURATION = 10 * 60 * 1000; // 10 minutes
+
+// Function to initialize auction items with fresh times
+function initializeAuctionItems() {
+  const now = Date.now();
+  return [
+    {
+      id: 1,
+      title: "Vintage Rolex Submariner",
+      description: "1960s classic dive watch in pristine condition",
+      imageUrl: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 5000,
+      currentBid: 5000,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    },
+    {
+      id: 2,
+      title: "MacBook Pro M3 Max",
+      description: "16-inch, 64GB RAM, 2TB SSD - Brand New",
+      imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 2500,
+      currentBid: 2500,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    },
+    {
+      id: 3,
+      title: "Rare Pokémon Card Set",
+      description: "1st Edition Base Set - Complete Collection",
+      imageUrl: "https://images.unsplash.com/photo-1606503153255-59d440e8dbc8?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 10000,
+      currentBid: 10000,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    },
+    {
+      id: 4,
+      title: "Gibson Les Paul 1959",
+      description: "Holy Grail of electric guitars",
+      imageUrl: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 150000,
+      currentBid: 150000,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    },
+    {
+      id: 5,
+      title: "iPhone 15 Pro Max 1TB",
+      description: "Sealed box, Titanium Blue",
+      imageUrl: "https://images.unsplash.com/photo-1678652197831-2d180705cd2c?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 800,
+      currentBid: 800,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    },
+    {
+      id: 6,
+      title: "Tesla Model S Plaid",
+      description: "2023, 5000 miles, Full Self-Driving",
+      imageUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=400&fit=crop&auto=format",
+      startingPrice: 75000,
+      currentBid: 75000,
+      highestBidder: null,
+      auctionEndTime: now + AUCTION_DURATION,
+      auctionStartTime: now,
+      bids: [],
+      ended: false
+    }
+  ];
+}
+
+// Initialize auction items
+let auctionItems = initializeAuctionItems();
+
+// Reset auctions when they all end (auto-restart)
+function checkAndResetAuctions() {
+  const currentTime = Date.now();
+  const allEnded = auctionItems.every(item => currentTime >= item.auctionEndTime);
+  
+  if (allEnded) {
+    console.log('All auctions ended. Resetting...');
+    auctionItems = initializeAuctionItems();
+    io.emit('AUCTIONS_RESET', { 
+      message: 'New auctions started!',
+      serverTime: Date.now()
+    });
   }
-];
+}
+
+// Check for auction resets every 5 seconds
+setInterval(checkAndResetAuctions, 5000);
 
 // Mutex-like lock mechanism to prevent race conditions
 const itemLocks = new Map();
@@ -273,7 +312,12 @@ io.on('connection', (socket) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: Date.now() });
+  res.json({ 
+    status: 'healthy', 
+    timestamp: Date.now(),
+    activeAuctions: auctionItems.filter(item => Date.now() < item.auctionEndTime).length,
+    totalAuctions: auctionItems.length
+  });
 });
 
 const PORT = process.env.PORT || 4000;
@@ -281,4 +325,5 @@ const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Auction items initialized: ${auctionItems.length}`);
+  console.log(`Auctions will run for ${AUCTION_DURATION / 60000} minutes each`);
 });

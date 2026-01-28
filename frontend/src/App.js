@@ -172,6 +172,15 @@ function App() {
       <footer className="footer">
         <div className="footer-content">
           <span>Real-time bidding • Secure transactions • Expert curation</span>
+          <span className="footer-divider">•</span>
+          <a 
+            href="https://www.linkedin.com/in/simhadri-pavan-kumar" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Built by Pavan Kumar
+          </a>
         </div>
       </footer>
     </div>

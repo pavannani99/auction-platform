@@ -1,0 +1,26 @@
+# OPTION 1: Docker (Local/VPS)
+docker-compose up --build
+Frontend: http://localhost:3000
+Backend: http://localhost:4000
+
+# OPTION 2: Deploy to Render (Backend) + Vercel (Frontend)
+
+## Backend (Render):
+1. Push backend folder to GitHub
+2. Create Web Service on Render.com
+3. Build: npm install
+4. Start: npm start
+5. Environment Variables:
+   - PORT=4000
+   - NODE_ENV=production
+6. Copy deployed URL (e.g., https://auction-api.onrender.com)
+
+## Frontend (Vercel):
+1. Push frontend folder to GitHub/deploy directly
+2. Deploy on Vercel.com
+3. Environment Variables:
+   - REACT_APP_BACKEND_URL=https://auction-api.onrender.com (your Render URL)
+4. Deploy
+
+Done! Your auction platform is live.
+
